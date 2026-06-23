@@ -312,10 +312,10 @@ For full AMFI validation, add:
 | Day | Module | Status |
 |-----|--------|--------|
 | **Day 1** | Data Ingestion + Live NAV Fetch | ✅ Complete |
-| **Day 2** | Data Cleaning + Processing Pipeline | 🔜 Planned |
-| **Day 3** | SQL Analysis + Schema Design | 🔜 Planned |
-| **Day 4** | Advanced Analytics + Notebooks | 🔜 Planned |
-| **Day 5** | Report Generation + Export | 🔜 Planned |
+| **Day 2** | Data Cleaning + Processing Pipeline |✅ Complete |
+| **Day 3** | SQL Analysis + Schema Design | ✅ Complete |
+| **Day 4** | Advanced Analytics + Notebooks | ✅ Complete |
+| **Day 5** | Report Generation + Export |✅ Complete|
 
 ---
 
