@@ -334,7 +334,7 @@ For full AMFI validation, add:
 
 ## 👤 Author
 
-**Student Name** — Data Analytics Portfolio Project
+**Nanthidha V N** — Data Analytics Portfolio Project
 Python 3.10+ | Streamlit | Plotly | MFAPI
 
 ---
