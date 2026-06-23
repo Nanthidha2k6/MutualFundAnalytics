@@ -1,0 +1,27 @@
+[theme]
+# ── Streamlit Theme Config ─────────────────────────────────────
+# Locks the look of the app regardless of machine/OS defaults.
+# Matches our premium fintech CSS in frontend/styles/theme.css
+
+primaryColor        = "#3b82f6"
+backgroundColor     = "#f0f4f8"
+secondaryBackgroundColor = "#ffffff"
+textColor           = "#1a2340"
+font                = "sans serif"
+
+[server]
+# Don't open browser automatically (useful for headless / CI)
+headless            = false
+port                = 8501
+enableCORS          = false
+
+[browser]
+gatherUsageStats    = false
+
+[runner]
+# Suppress magic command warnings
+magicEnabled        = true
+
+[client]
+showSidebarNavigation = false
+
