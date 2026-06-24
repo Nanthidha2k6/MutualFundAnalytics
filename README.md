@@ -233,6 +233,58 @@ Opens at **`http://localhost:8501`**
 
 ---
 
+## 🗄️ Day 2: SQLite Star Schema & SQL Analytics
+
+Day 2 introduces a complete **data cleaning pipeline**, a **SQLite star schema design**, and a **SQL analytical query engine**.
+
+### Architecture & Components
+
+```
+data/raw/                     → Raw data source (unmodified)
+  ├── fund_master.csv
+  └── live_nav_combined.csv
+scripts/clean_data.py         → Standardizes, deduplicates, and forward-fills holidays/weekends
+data/processed/               → Holds 10 cleaned CSV files (e.g. nav_history_cleaned.csv)
+sql/schema.sql                → Star schema DDL for dimensions and facts
+sql/create_schema.py          → Initializes bluestock_mf.db using SQLAlchemy
+sql/load_cleaned_data.py      → Seeds dimension and fact tables, mapping natural keys
+sql/queries.sql               → 10 analytical SQL queries against the star schema
+data_dictionary.md            → Detailed schema and column documentation
+day2_pipeline.py              → End-to-end orchestrator pipeline
+bluestock_mf.db               → Final SQLite star schema database in project root
+```
+
+### Database Star Schema Design
+
+The SQLite database `bluestock_mf.db` is built around a multi-dimensional star schema to optimize analytical queries:
+- **Dimensions**:
+  - `dim_fund`: Fund details and categories.
+  - `dim_date`: Calendar date attributes (`date_key`, `full_date`, `day`, `month`, `month_name`, `quarter`, `year`, `week_of_year`).
+- **Facts**:
+  - `fact_nav`: Daily NAV records (linked to `dim_fund` and `dim_date`).
+  - `fact_transactions` *(Created but empty)*: Investor transactions (SIP, Lumpsum, Redemption).
+  - `fact_performance` *(Created but empty)*: Scheme return metrics and expense ratios.
+  - `fact_aum` *(Created but empty)*: Fund Assets Under Management (AUM).
+
+> [!NOTE]
+> To maintain strict data integrity, the transaction, return, and AUM fact tables are left empty because their corresponding raw source files (`investor_transactions.csv` and `scheme_performance.csv`) are not part of the raw repository. These limitations are documented in `data_dictionary.md` and `sql/queries.sql`.
+
+### How to Run the Day 2 Workflow
+
+Run the end-to-end pipeline orchestrator using a single command:
+
+```bash
+python day2_pipeline.py
+```
+
+This command will:
+1. Process and clean all raw CSVs, writing the outputs to `data/processed/`.
+2. Initialize the SQLite database schema.
+3. Seed `dim_fund`, `dim_date`, and `fact_nav`.
+4. Execute the 10 analytical SQL queries and print formatted tables of the output in the console.
+
+---
+
 ## 📦 Dependencies
 
 | Library | Version | Purpose |
@@ -334,8 +386,8 @@ For full AMFI validation, add:
 
 ## 👤 Author
 
-**Nanthidha V N** — Data Analytics Portfolio Project
-Python 3.10+ | Streamlit | Plotly | MFAPI
+**Nanthidha V N (Nanthidha2k6)** — Data Analytics Portfolio Project
+Python 3.10+ | Streamlit | Plotly | MFAPI | SQLite
 
 ---
 

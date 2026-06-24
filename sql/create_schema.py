@@ -1,64 +1,83 @@
-import sqlite3
-import os
-from pathlib import Path
+"""
+========================================================
+  Mutual Fund Analytics - Day 2: SQLite Schema Builder
+  File   : sql/create_schema.py
+  Author : Student Project
+  Purpose: Read DDL from sql/schema.sql and initialize the
+           star schema database using SQLAlchemy.
+========================================================
+"""
 
-# Paths
+import os
+import sys
+from pathlib import Path
+from sqlalchemy import create_engine, text
+
+# Fix UnicodeEncodeError on Windows terminals using CP1252 encoding.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
+# Configuration
 SQL_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SQL_DIR.parent
-DB_DIR = PROJECT_ROOT / "data" / "processed"
-DB_PATH = DB_DIR / "mutual_funds.db"
+DB_PATH = PROJECT_ROOT / "bluestock_mf.db"
+SCHEMA_SQL_PATH = SQL_DIR / "schema.sql"
 
 def create_schema():
-    print(f"Creating SQLite database schema...")
+    print("="*60)
+    print("  INITIALIZING DATABASE SCHEMA")
+    print("="*60)
+    print(f"Database File: {DB_PATH.resolve()}")
+    print(f"Schema DDL   : {SCHEMA_SQL_PATH.resolve()}")
     
-    # Ensure processed directory exists
-    DB_DIR.mkdir(parents=True, exist_ok=True)
+    if not SCHEMA_SQL_PATH.exists():
+        print(f"[ERROR] Schema SQL file not found at: {SCHEMA_SQL_PATH}")
+        sys.exit(1)
+        
+    # Read the SQL schema file
+    with open(SCHEMA_SQL_PATH, "r", encoding="utf-8") as f:
+        sql_content = f.read()
+        
+    # Initialize SQLAlchemy database engine
+    db_uri = f"sqlite:///{DB_PATH.resolve()}"
+    print(f"SQLAlchemy Connection URI: {db_uri}")
     
-    # Connect to SQLite database (will create file if it doesn't exist)
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    
-    # Enable foreign keys
-    cursor.execute("PRAGMA foreign_keys = ON;")
-    
-    # 1. Create funds table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS funds (
-        scheme_code INTEGER PRIMARY KEY,
-        scheme_name TEXT NOT NULL,
-        short_name TEXT NOT NULL,
-        category TEXT,
-        risk_grade TEXT
-    );
-    """)
-    
-    # 2. Create nav_history table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS nav_history (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        scheme_code INTEGER NOT NULL,
-        date TEXT NOT NULL,
-        nav REAL NOT NULL,
-        FOREIGN KEY (scheme_code) REFERENCES funds (scheme_code) ON DELETE CASCADE,
-        UNIQUE(scheme_code, date)
-    );
-    """)
-    
-    # 3. Create portfolio_transactions table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS portfolio_transactions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        scheme_code INTEGER NOT NULL,
-        purchase_date TEXT NOT NULL,
-        amount REAL NOT NULL,
-        units REAL NOT NULL,
-        FOREIGN KEY (scheme_code) REFERENCES funds (scheme_code) ON DELETE CASCADE
-    );
-    """)
-    
-    conn.commit()
-    conn.close()
-    print(f"Database schema initialized successfully at: {DB_PATH}")
+    try:
+        engine = create_engine(db_uri)
+        
+        # Split DDL into individual statements to execute them one by one
+        statements = []
+        current_stmt = []
+        for line in sql_content.splitlines():
+            trimmed = line.strip()
+            if trimmed.startswith("--") or not trimmed:
+                continue
+            current_stmt.append(line)
+            if trimmed.endswith(";"):
+                statements.append("\n".join(current_stmt))
+                current_stmt = []
+                
+        # Connect and execute schema creation statements within a single transaction block
+        with engine.begin() as conn:
+            # Enable foreign keys
+            conn.execute(text("PRAGMA foreign_keys = ON;"))
+            print("  [OK] Enabled PRAGMA foreign_keys = ON")
+            
+            for stmt in statements:
+                stmt_text = stmt.strip()
+                if not stmt_text:
+                    continue
+                # Extract statement header for logging
+                header = stmt_text.split("\n")[0][:60]
+                conn.execute(text(stmt_text))
+                print(f"  [OK] Executed statement: {header}...")
+                
+        print("\n[SUCCESS] SQLite star schema database initialized successfully.")
+        
+    except Exception as exc:
+        print(f"\n[FAIL] Error occurred while creating schema: {exc}")
+        sys.exit(1)
+    print("="*60)
 
 if __name__ == "__main__":
     create_schema()
