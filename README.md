@@ -396,6 +396,43 @@ Day 3 adds professional-grade mutual fund performance and risk analysis, linear 
 
 ---
 
+## 🔍 Day 4: Exploratory Data Analysis (EDA)
+
+Day 4 adds an advanced, institutional-grade Exploratory Data Analysis (EDA) suite based strictly on verified historical data.
+
+### ⚠️ Day 4 Data Limitations & Missing Metrics
+To maintain strict data integrity, the following datasets are explicitly documented as **Unavailable** and omitted from the code to avoid data fabrication:
+- Historical AUM Time-Series (2022–2025)
+- Monthly SIP Inflow Time-Series (2022–2025)
+- Category-wise monthly inflow data
+- Investor Demographics (Age Group, Gender)
+- Geographic Distribution (State-Wise, T30 vs B30 Cities)
+- Folio Count History
+- Sector Allocation / Portfolio Holdings (`portfolio_holdings.csv`)
+
+### Visualization & Insights Suite
+We expanded the risk and performance analysis using the existing historical NAVs and Nifty benchmark returns to generate **15 advanced financial charts** (8 interactive Plotly charts, 7 Seaborn/Matplotlib charts) exported as publication-quality PNGs in the `reports/` directory:
+
+1. **Daily NAV Trends (2022–2026)**: Overlay of NAV curves with shaded zones highlighting the **2023 Bull Run** and **2024 Market Corrections**.
+2. **Normalized Cumulative Growth (2013–2026)**: Rebased growth from a base of 100 showing long-term compounding.
+3. **Correlation Heatmap**: Daily returns correlation matrix between all 6 schemes.
+4. **KDE Returns Distribution**: Analysis of daily return density, skewness, and kurtosis.
+5. **Annualized 90-Day Rolling Volatility**: Running return variance tracking market risk shifts.
+6. **Rolling 90-Day Beta**: Sensitivities against Nifty 50 showing portfolio risk dynamics.
+7. **Running Drawdown Curves**: Run of declines from peak (%) showing crash depths and lengths.
+8. **Risk-Return Profile**: Annualized Volatility vs. 3-Year CAGR scatter plot showing the efficient frontier.
+9. **Monthly Seasonality Heatmap**: Average monthly returns (Months vs. Years) showing calendar anomalies.
+10. **Outperformance Spread**: Cumulative return spread of Nippon Large Cap vs. Nifty 50.
+11. **Drawdown Depth Boxplots**: Distribution of daily drawdown depths showing spread of corrections.
+12. **Rolling 90-Day Correlation**: Dynamic relationship between equity schemes and Nifty 50.
+13. **Return Autocorrelation (ACF)**: Analysis of serial correlation for lags 1 to 20 days.
+14. **Bivariate Returns Scatter Matrix (Pairplot)**: Joint return distributions between equity schemes.
+15. **Tail Risk Comparison**: Bar comparison of 95% and 99% daily Value-at-Risk (VaR) & Conditional VaR (CVaR).
+
+The Jupyter Notebook **[EDA_Analysis.ipynb](file:///c:/Users/hp/Desktop/AI AGENT2/MutualFundAnalytics/notebooks/EDA_Analysis.ipynb)** contains all 15 cells and includes **15 well-written Markdown insight sections** (one for each visualization) explaining the market findings.
+
+---
+
 ## 🛠️ Troubleshooting
 
 | Problem | Fix |
