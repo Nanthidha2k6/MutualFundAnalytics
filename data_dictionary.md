@@ -137,3 +137,75 @@ Stores scheme assets under management.
 | `fund_key` | INTEGER | FOREIGN KEY (`dim_fund.fund_key`) | Key linking to the fund details | `scheme_performance.csv` (Missing) |
 | `date_key` | INTEGER | FOREIGN KEY (`dim_date.date_key`) | Key linking to the date details | `scheme_performance.csv` (Missing) |
 | `aum` | REAL | CHECK (>= 0) | Assets Under Management in Crores (INR) | `scheme_performance.csv` (Missing) |
+
+---
+
+## 3. Day 3 Performance Analytics & Scorecard Datasets
+
+### A. `fund_metadata.csv` (Raw Metadata)
+Contains verified public assets under management (AUM) and expense ratios.
+- **Source**: ValueResearchOnline (June 2026)
+
+| Column Name | Data Type | Business Meaning |
+|---|---|---|
+| `scheme_code` | Integer | Unique AMFI scheme code |
+| `scheme_name` | String | Official scheme name |
+| `aum_cr` | Float | Assets Under Management (AUM) in Crores (INR) |
+| `expense_ratio_percent` | Float | Total expense ratio in percent |
+| `source_url` | String | Verification URL |
+| `retrieval_date` | Date | Verification retrieval date |
+
+### B. `nifty_benchmarks_cleaned.csv` (Processed)
+Contains historical index prices and returns fetched from Yahoo Finance Chart API.
+
+| Column Name | Data Type | Business Meaning |
+|---|---|---|
+| `date` | Date | Date in YYYY-MM-DD format |
+| `^NSEI_close` | Float | Closing price of Nifty 50 Index |
+| `^NSEI_return` | Float | Daily return of Nifty 50 Index |
+| `^CNX100_close` | Float | Closing price of Nifty 100 Index |
+| `^CNX100_return` | Float | Daily return of Nifty 100 Index |
+
+### C. `fund_scorecard.csv` (Processed)
+Contains calculated daily return distributions, CAGR, risk ratios, worst drawdowns, AUM, expense ratios, and the overall scorecard score.
+
+| Column Name | Data Type | Business Meaning |
+|---|---|---|
+| `amfi_code` | Integer | Unique AMFI scheme code |
+| `scheme_name` | String | Official scheme name |
+| `cagr_1y` / `cagr_3y` / `cagr_5y` | Float | 1Y, 3Y, and 5Y CAGR |
+| `volatility_annualized` | Float | Annualized volatility of daily returns |
+| `sharpe_ratio` | Float | Annualized Sharpe ratio (Rf = 6.5%) |
+| `sortino_ratio` | Float | Annualized Sortino ratio (Rf = 6.5%) |
+| `max_drawdown` | Float | Maximum peak-to-trough decline (negative decimal) |
+| `worst_dd_peak_date` | Date | Peak date of the worst drawdown |
+| `worst_dd_trough_date` | Date | Trough date of the worst drawdown |
+| `worst_dd_recovery_date` | Date | Recovery date of the worst drawdown |
+| `aum_cr` | Float | Assets Under Management in Crores |
+| `expense_ratio_percent` | Float | Expense ratio in percent |
+| `skewness` | Float | Skewness of daily returns |
+| `kurtosis` | Float | Excess kurtosis of daily returns |
+| `overall_scorecard_score` | Float | Final overall score (0-100 scale) |
+| `omitted_metrics` | String | List of metrics omitted due to unavailability |
+
+### D. `alpha_beta.csv` (Processed)
+Contains benchmark comparison regression results.
+
+| Column Name | Data Type | Business Meaning |
+|---|---|---|
+| `amfi_code` | Integer | Unique AMFI scheme code |
+| `scheme_name` | String | Official scheme name |
+| `benchmark` | String | Mapped index (e.g. ^NSEI or ^CNX100) |
+| `alpha_annualized` | Float | Annualized Alpha |
+| `beta` | Float | Beta (slope of regression line) |
+| `tracking_error_annualized` | Float | Annualized tracking error against benchmark |
+
+---
+
+## 4. SQLite Day 3 Database Tables (`mutual_funds.db`)
+
+We loaded the Day 3 calculated outputs as the following SQL tables:
+- **`fund_scorecard`**: Stores the fields of `fund_scorecard.csv`.
+- **`alpha_beta`**: Stores the fields of `alpha_beta.csv`.
+- **`nifty_benchmarks`**: Stores the fields of `nifty_benchmarks_cleaned.csv`.
+

@@ -33,6 +33,7 @@ from frontend.components.charts import make_comparison_chart
 import dashboard.pages.fund_analysis        as _page_fa
 import dashboard.pages.nav_comparison       as _page_nc
 import dashboard.pages.performance_insights as _page_pi
+import dashboard.pages.performance_scorecard as _page_ps
 import dashboard.pages.portfolio_tracker    as _page_pt
 
 
@@ -117,6 +118,7 @@ with st.sidebar:
         ("🔍  Fund Analysis",        "fund_analysis"),
         ("⚖️  NAV Comparison",       "nav_comparison"),
         ("💡  Performance Insights", "performance_insights"),
+        ("🏆  Performance Scorecard", "performance_scorecard"),
         ("💼  Portfolio Tracker",     "portfolio_tracker"),
     ]
 
@@ -320,6 +322,9 @@ try:
 
     elif ACTIVE == "performance_insights":
         _page_pi.show(df_all, selected_days)
+
+    elif ACTIVE == "performance_scorecard":
+        _page_ps.show(df_all, selected_days)
 
     elif ACTIVE == "portfolio_tracker":
         _page_pt.show(df_all, selected_days)

@@ -371,6 +371,31 @@ For full AMFI validation, add:
 
 ---
 
+## 🏆 Day 3: Performance Analytics & Scorecard
+
+Day 3 adds professional-grade mutual fund performance and risk analysis, linear regression against benchmark indices, and a dynamic ranking scorecard.
+
+### Key Implementation Features
+1. **Benchmark Indices Ingestion**: Fetches real daily historical index prices and returns for **Nifty 50 (`^NSEI`)** and **Nifty 100 (`^CNX100`)** from the public Yahoo Finance Chart API.
+2. **Verified Metadata**: Uses a verified metadata file (`data/raw/fund_metadata.csv`) containing public Assets Under Management (AUM) and Expense Ratios retrieved from **ValueResearchOnline** (as of June 2026), preventing data fabrication.
+3. **Resilient Scorecard (0-100)**: Implements Min-Max ranking scaling with a robust weight-rescaling mechanism. If any fund-level metric (like expense ratio) is marked as `"Unavailable"`, active weights are automatically rescaled to sum to 100%.
+4. **Calculated Risk & Performance Metrics**:
+   - **CAGR**: 1-Year, 3-Year, and 5-Year CAGR computed using the closest date logic.
+   - **Sharpe & Sortino Ratios**: Annualized using a 6.5% risk-free rate, with downside deviation calculated using negative daily return variance.
+   - **Alpha, Beta, and Tracking Error**: Annualized metrics computed via linear regression against date-aligned daily index returns.
+   - **Max Drawdowns**: Worst peak-to-trough drop details including Peak, Trough, and Recovery dates.
+5. **Interactive Scorecard Page**: Integrated as a separate page in the Streamlit dashboard sidebar containing KPI leaderboard cards, structured data tables, Plotly bar charts, and growth comparisons.
+
+### New Day 3 Components & Outputs
+- **[NEW] [Performance_Analytics.ipynb](file:///c:/Users/hp/Desktop/AI AGENT2/MutualFundAnalytics/notebooks/Performance_Analytics.ipynb)**: Detailed step-by-step analytics notebook.
+- **[NEW] [fund_metadata.csv](file:///c:/Users/hp/Desktop/AI AGENT2/MutualFundAnalytics/data/raw/fund_metadata.csv)**: Verified fund level AUM, expense ratios, and sources.
+- **[NEW] [fund_scorecard.csv](file:///c:/Users/hp/Desktop/AI AGENT2/MutualFundAnalytics/data/processed/fund_scorecard.csv)**: Final scorecard metrics.
+- **[NEW] [alpha_beta.csv](file:///c:/Users/hp/Desktop/AI AGENT2/MutualFundAnalytics/data/processed/alpha_beta.csv)**: Regression results.
+- **[NEW] [benchmark_comparison.png](file:///c:/Users/hp/Desktop/AI AGENT2/MutualFundAnalytics/reports/benchmark_comparison.png)**: Cumulative returns plot.
+- **[NEW] SQLite Tables**: Loaded tables `fund_scorecard`, `alpha_beta`, and `nifty_benchmarks` in `mutual_funds.db`.
+
+---
+
 ## 🛠️ Troubleshooting
 
 | Problem | Fix |
