@@ -433,6 +433,79 @@ The Jupyter Notebook **[EDA_Analysis.ipynb](file:///c:/Users/hp/Desktop/AI AGENT
 
 ---
 
+## 📊 Power BI Dashboard Developer Guide
+
+A complete developer blueprint is provided in **[power_bi_setup.md](file:///c:/Users/hp/Desktop/AI%20AGENT2/MutualFundAnalytics/power_bi_setup.md)** to recreate the **Bluestock Mutual Fund Analytics Dashboard** in Power BI Desktop.
+
+### 🗃️ 1. Power BI-Ready Datasets
+The datasets are pre-packaged and available as clean CSV files inside **`data/processed/power_bi/`**:
+- **`dim_fund.csv`**: Fund Master table containing AMC metadata and risk profiles.
+- **`fact_nav.csv`**: Time-series table containing daily NAV records and daily return percentages.
+- **`fact_nifty_benchmarks.csv`**: Time-series table containing daily close prices and daily returns for Nifty 50 and Nifty 100.
+- **`fact_scorecard.csv`**: Performance indicator summary containing CAGR (1Y/3Y/5Y), Sharpe, Sortino, drawdowns, and overall scorecard scores.
+- **`fact_alpha_beta.csv`**: Risk analytics summary containing Alpha, Beta, and Tracking Errors.
+
+### 🔗 2. Star Schema & Relationships
+Configure the relationships inside Power BI's Model View:
+- **`dim_fund[amfi_code]` (1) <---> `fact_nav[amfi_code]` (*)** (Active, Single direction)
+- **`dim_fund[amfi_code]` (1) <---> `fact_scorecard[amfi_code]` (1)** (Active, Single direction)
+- **`dim_fund[amfi_code]` (1) <---> `fact_alpha_beta[amfi_code]` (*)** (Active, Single direction)
+
+### 🧮 3. Required DAX Measures
+Create the following DAX measures in Power BI:
+- **Latest NAV**:
+  ```dax
+  Latest NAV = CALCULATE(MAX('fact_nav'[nav]), LASTDATE('fact_nav'[date]))
+  ```
+- **Cumulative Growth (Base = 100)**:
+  ```dax
+  Cumulative Growth = 
+  VAR FirstDateVal = CALCULATE(MIN('fact_nav'[date]), ALLSELECTED('fact_nav'[date]))
+  VAR FirstNAV = CALCULATE(SUM('fact_nav'[nav]), 'fact_nav'[date] = FirstDateVal)
+  VAR CurrentNAV = [Latest NAV]
+  RETURN
+  DIVIDE(CurrentNAV, FirstNAV, 0) * 100
+  ```
+- **Annualized Volatility**:
+  ```dax
+  Annualized Volatility = STDEV.S('fact_nav'[daily_return]) * SQRT(252)
+  ```
+- **Average Score KPI**:
+  ```dax
+  Average Score = AVERAGE('fact_scorecard'[overall_scorecard_score])
+  ```
+- **Benchmark Cumulative Growth (Base = 100)**:
+  ```dax
+  Benchmark Cumulative Growth = 
+  VAR FirstDateVal = CALCULATE(MIN('fact_nifty_benchmarks'[date]), ALLSELECTED('fact_nifty_benchmarks'[date]))
+  VAR FirstClose = CALCULATE(SUM('fact_nifty_benchmarks'[close]), 'fact_nifty_benchmarks'[date] = FirstDateVal)
+  VAR CurrentClose = SUM('fact_nifty_benchmarks'[close])
+  RETURN
+  DIVIDE(CurrentClose, FirstClose, 0) * 100
+  ```
+
+### 📋 4. Page Layout & Visual Mappings
+- **Page 1: Industry Overview**:
+  - **KPI Cards**: Tracked AUM (`SUM(fact_scorecard[aum_cr])`), active scheme counts (`DISTINCTCOUNT(dim_fund[amfi_code])`), and portfolio scorecard averages.
+  - **AUM by AMC Donut Chart**: Legend = `dim_fund[fund_house]`, Values = `SUM(fact_scorecard[aum_cr])`.
+- **Page 2: Fund Performance**:
+  - **Risk-Return Scatter Bubble Plot**: X-Axis = `[Annualized Volatility]`, Y-Axis = `AVERAGE(fact_scorecard[cagr_3y])`, Size = `SUM(fact_scorecard[aum_cr])`, Details = `dim_fund[scheme_name]`. (Reference image: **[dashboard_scorecard_view.png](file:///c:/Users/hp/Desktop/AI%20AGENT2/MutualFundAnalytics/reports/dashboard_scorecard_view.png)**).
+  - **Fund Scorecard Grid Table**: AMFI code, Scheme Name, Overall Score, 3Y CAGR, Sharpe, Max Drawdown, Expense Ratio.
+  - **NAV vs Index Performance Line Chart**: Shared X-Axis = `fact_nav[date]`, Y-Axis = `[Cumulative Growth]` & `[Benchmark Cumulative Growth]`.
+  - **Slicers**: Filters for Fund House (AMCs) and Fund Category.
+- **Pages 3 & 4 (Data Omissions)**:
+  - Display clean "Data Omission Notice" text cards for **Investor Analytics** and **SIP & Market Trends** pages to explain the missing source data limitations.
+
+### ⚠️ 5. Known Data Limitations (No Fabrication)
+Due to strict requirements against synthetic data generation, the following visuals cannot be completed because their raw sources are missing from the project repository:
+- Industry-wide AUM history (2022–2025)
+- Monthly AMC SIP inflows
+- Investor demographic splits (age distribution, average SIP by age, gender splits)
+- Geographic sales (SIP amount by state, T30 vs B30 cities)
+- Folio count history
+
+---
+
 ## 🛠️ Troubleshooting
 
 | Problem | Fix |
