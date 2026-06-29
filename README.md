@@ -43,7 +43,7 @@ python live_nav_fetch.py
 streamlit run dashboard/streamlit_app.py
 ```
 
-Open **`http://localhost:8501`** in your browser. That's it. ✅
+Open **[http://localhost:8501](http://localhost:8501)** in your browser. That's it. ✅
 
 ---
 
@@ -229,7 +229,7 @@ Runs 6-section analysis across all CSVs in `data/raw/`:
 streamlit run dashboard/streamlit_app.py
 ```
 
-Opens at **`http://localhost:8501`**
+Opens at **[http://localhost:8501](http://localhost:8501)**
 
 ---
 
@@ -351,7 +351,7 @@ For full AMFI validation, add:
 - [ ] `pip install -r requirements.txt` runs without errors
 - [ ] `python live_nav_fetch.py` fetches all 6 schemes successfully
 - [ ] `python data_ingestion.py` shows clean quality summary
-- [ ] `streamlit run dashboard/streamlit_app.py` opens the dashboard
+- [ ] `streamlit run dashboard/streamlit_app.py` opens the dashboard at [http://localhost:8501](http://localhost:8501)
 - [ ] `data/raw/live_nav_combined.csv` exists with 19,000+ rows
 - [ ] All 4 dashboard pages load without errors
 - [ ] Code is commented and beginner-friendly
