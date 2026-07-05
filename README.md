@@ -367,7 +367,7 @@ For full AMFI validation, add:
 | **Day 2** | Data Cleaning & Database Seed Pipeline | ✅ Complete |
 | **Day 3** | Performance Analytics & Scorecard | ✅ Complete |
 | **Day 4** | Exploratory Data Analysis (EDA) | ✅ Complete |
-| **Day 5** | Portfolio Reporting & Export | 📅 In Progress |
+| **Day 5** | Advanced Analytics & Recommender | ✅ Complete |
 
 ---
 
@@ -503,6 +503,42 @@ Due to strict requirements against synthetic data generation, the following visu
 - Investor demographic splits (age distribution, average SIP by age, gender splits)
 - Geographic sales (SIP amount by state, T30 vs B30 cities)
 - Folio count history
+
+---
+
+## 🧮 Day 5: Advanced Analytics & Fund Recommender
+
+Day 5 adds institutional-grade portfolio risk-adjusted metrics, tail risk modeling, and an interactive CLI fund recommendation engine.
+
+### 1. Risk-Modeling Methodologies
+- **Historical Value-at-Risk (95% Daily VaR)**: Measures the maximum expected daily loss at a 95% confidence level.
+  $$\text{VaR}_{95} = -\text{Percentile}(\text{Daily Returns}, 5)$$
+- **Conditional Value-at-Risk (95% Daily CVaR / Expected Shortfall)**: Measures the average daily loss in the worst 5% of trading days.
+  $$\text{CVaR}_{95} = -\text{Mean}(\text{Daily Returns} \le -\text{VaR}_{95})$$
+- **Rolling 90-Day Sharpe Ratio**: Tracks annualized risk-adjusted return shifts over time using a 6.5% risk-free rate.
+  $$\text{Sharpe}_{\text{rolling}} = \frac{\text{Mean}(\text{Daily Excess Returns})}{\text{StdDev}(\text{Daily Returns})} \times \sqrt{252}$$
+
+### 2. Fund Recommendation Engine (`recommender.py`)
+A command-line tool (**[recommender.py](file:///c:/Users/hp/Desktop/AI%20AGENT2/MutualFundAnalytics/scripts/recommender.py)**) was created to recommend funds matching the user's risk appetite:
+- **Low Risk**: Recommends Moderate risk Debt schemes (HDFC Money Market & ABSL Banking & PSU Debt).
+- **Moderate Risk**: Recommends Moderate risk Debt schemes.
+- **High Risk**: Recommends Very High risk Equity Growth schemes (ranked descending by Sharpe ratio).
+
+Usage:
+```bash
+python scripts/recommender.py --risk high
+```
+
+### 3. Key Advanced Insights
+- **Conservative Reference**: HDFC Money Market Fund has a daily VaR/CVaR of nearly 0.00%, confirming its capital-preservation role.
+- **Tail Risk Severity**: The Expected Shortfall (CVaR) for all equity funds exceeds 2.0% daily, demonstrating that tail corrections are severe.
+- **Risk-Adjusted Leader**: **SBI Small Cap Fund** offers the highest Sharpe ratio (~0.7430) of all equity funds.
+
+### ⚠️ 4. Day 5 Data Limitations & Omitted Tasks
+To maintain absolute data integrity and prevent fabrication, the following tasks are **omitted** and documented as unavailable:
+- **Investor Cohort Analysis**: Requires investor transaction history (the `fact_transactions` database table contains zero rows).
+- **SIP Continuity Analysis**: Requires client-level SIP timestamps, which do not exist.
+- **Sector HHI Concentration**: Requires portfolio sector weights or fund holdings, which do not exist.
 
 ---
 
